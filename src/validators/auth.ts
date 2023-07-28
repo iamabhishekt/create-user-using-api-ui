@@ -1,15 +1,16 @@
 import {z} from 'zod'
 
-export const ClientSchema = z.object({
+export const FormSchema = z.object({
   clientId: z.string().min(3).max(255),
-  userId: z.string().min(3).max(255),
   clientSecret: z.string().min(3).max(255),
-  operation: z.string().min(3).max(255),
+  userId: z.string().min(3).max(255),
+  password: z.string().min(6).max(100),
   email: z.string().email(),
   notificationEmail: z.string().email(),
-  name: z.string().min(3).max(255),
-  studentId: z.string().min(7).max(7),
-  year: z.string().min(2).max(10),
-  password: z.string().min(6).max(100),
-  confirmPassword: z.string().min(6).max(100),
+  role: z.string({
+    required_error: "Please select a role.",
+  }),
+  operation: z.string({
+    required_error: "Please select an operation.",
+  }),
 });

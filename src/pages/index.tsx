@@ -43,35 +43,43 @@ import {
 
 import { Input } from "@/components/ui/input"
 import { useForm } from 'react-hook-form'
-import { ClientSchema } from '@/validators/auth'
+import { FormSchema } from '@/validators/auth'
 import { z } from "zod"
 import { zodResolver} from "@hookform/resolvers/zod"
 import { toast } from "@/components/ui/use-toast"
 import { cn } from "@/lib/utils"
 
 const inter = Inter({ subsets: ['latin'] })
-type Input = z.infer<typeof ClientSchema>
+type Input = z.infer<typeof FormSchema>
 
 const operations = [
-  { label: "Create User", value: "CreateUser" },
-  { label: "Update User", value: "UpdateUser" },
-  { label: "Disable User", value: "DisableUser" },
+  { label: "Create User", value: "createUser" },
+  { label: "Update User", value: "updateUser" },
+  { label: "Disable User", value: "disableUser" },
 ] as const
 
-const FormSchema = z.object({
-  operation: z.string({
-    required_error: "Please select an operation.",
-  }),
-})
+const roles = [
+  { label: "Administrator", value: "administrator" },
+  { label: "Analyst", value: "analyst" },
+  { label: "Content Creator", value: "contentCreator" },
+  { label: "Data Manager", value: "dataManager" },
+  { label: "Distributed Sending User", value: "distributedSendingUser" },
+] as const
 
 export default function Home() {
   const form = useForm<Input>({
-    resolver: zodResolver(ClientSchema), // change this from schema auth.ts
+    resolver: zodResolver(FormSchema), // change this from schema auth.ts
     defaultValues: {
       clientId: "",
       clientSecret: "",
+      userId: "",
+      password: "",
+      email: "",
+      notificationEmail: "",
     },
   })
+
+  console.log(form.watch())
 
   function onSubmit (data: Input) {
     console.log(data)
@@ -202,7 +210,7 @@ export default function Home() {
             <FormItem>
               <FormLabel >User Password</FormLabel>
               <FormControl>
-                <Input placeholder="Enter User Password" {...field} />
+                <Input placeholder="Enter User Password" {...field} type="password" />
               </FormControl>
               <FormDescription>
                 Enter Temporary User Password for new user.
@@ -238,6 +246,67 @@ export default function Home() {
               </FormControl>
               <FormDescription>
                 Enter User Notification Email given by user.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="role"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Assign Role</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-[200px] justify-between",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value
+                        ? roles.find(
+                            (role) => role.value === field.value
+                          )?.label
+                        : "Select role"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search role..." />
+                    <CommandEmpty>No role found.</CommandEmpty>
+                    <CommandGroup>
+                      {roles.map((role) => (
+                        <CommandItem
+                          value={role.value}
+                          key={role.value}
+                          onSelect={(value) => {
+                            form.setValue("role", value)
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              role.value === field.value
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {role.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <FormDescription>
+                This is the role that will be used for users in SFMC.
               </FormDescription>
               <FormMessage />
             </FormItem>
