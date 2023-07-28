@@ -528,7 +528,7 @@ export default function Home() {
                       variant={"ghost"}
                       onClick={() => {
                         // validation
-                        form.trigger(["clientId", "clientSecret"]);
+                        form.trigger(["clientId", "clientSecret", "subdomain"]);
                         const clientIdState = form.getFieldState("clientId");
                         const clientSecretState =
                           form.getFieldState("clientSecret");
