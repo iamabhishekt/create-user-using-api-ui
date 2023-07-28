@@ -179,10 +179,7 @@ export default function Home() {
                         <FormItem>
                           <FormLabel>Subdomain</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Enter Subdomain"
-                              {...field}
-                            />
+                            <Input placeholder="Enter Subdomain" {...field} />
                           </FormControl>
                           <FormDescription>
                             Enter subdomain from Business Unit.
@@ -535,8 +532,7 @@ export default function Home() {
                         const clientIdState = form.getFieldState("clientId");
                         const clientSecretState =
                           form.getFieldState("clientSecret");
-                        const subdomainState =
-                          form.getFieldState("subdomain");
+                        const subdomainState = form.getFieldState("subdomain");
 
                         if (!clientIdState.isDirty || clientIdState.invalid)
                           return;
@@ -544,11 +540,8 @@ export default function Home() {
                           !clientSecretState.isDirty ||
                           clientSecretState.invalid
                         )
-                        if (
-                          !subdomainState.isDirty ||
-                          subdomainState.invalid
-                        )
-                          return;
+                          if (!subdomainState.isDirty || subdomainState.invalid)
+                            return;
                         setFormStep(2);
                       }}
                     >
