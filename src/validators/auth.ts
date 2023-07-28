@@ -7,6 +7,11 @@ export const FormSchema = z.object({
   password: z.string().min(6).max(100),
   email: z.string().email(),
   notificationEmail: z.string().email(),
+  operation: z.string().min(2).max(10),
+  role: z.string(),
+  isAPI: z.enum(["yes", "no"]),
+  isLocked: z.enum(["yes", "no"]),
+  wantDisable: z.boolean().default(false).optional(),
 });
 
 
