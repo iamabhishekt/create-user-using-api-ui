@@ -9,7 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-// import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Card,
   CardContent,
@@ -28,13 +28,13 @@ import {
 } from "@/components/ui/select"
 
 import { Input } from "@/components/ui/input"
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { FormSchema } from '@/validators/auth'
 import { z } from "zod"
 import { zodResolver} from "@hookform/resolvers/zod"
 import React from "react";
-// import { cn } from "@/lib/utils";
-// import { ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { ArrowRight } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
@@ -67,7 +67,7 @@ export default function Home() {
   return (
     <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
     <Card className="w-[350px]">
-    <ScrollArea className="h-[850px] w-full rounded-md border">
+    <ScrollArea className="h-full w-full rounded-md border">
       <CardHeader>
         <CardTitle>Application Name</CardTitle>
         <CardDescription>Create User with API in one-click by filling following information.</CardDescription>
@@ -76,13 +76,17 @@ export default function Home() {
         
       <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-
+        
       {/* postman status  */}
-      <div className='rounded-md border p-4'>
+      <div className={
+        cn('rounded-md border p-4')
+      }>
         <FormLabel>Staus: </FormLabel>
       </div>
 
-      <div className='rounded-md border p-4'>
+      {formStep === 0 && 
+        (<div className={
+        cn('rounded-md border p-4')}>
       {/* select action dropdown */}
       <FormField
           control={form.control}
@@ -116,8 +120,10 @@ export default function Home() {
           )}
         />
         </div>
-
-        <div className='rounded-md border p-4'>
+      )}
+      
+       {formStep === 1 && (<div className={
+        cn('rounded-md border p-4')}>
           {/* client id */}
           <FormField
           control={form.control}
@@ -153,9 +159,10 @@ export default function Home() {
             </FormItem>
           )}
         />
-        </div>
-
-      <div className='rounded-md border p-4'>
+        </div>)}             
+        
+      {formStep === 2 && (<div className={
+        cn('rounded-md border p-4')}>
       {/* user id */}
        <FormField
           control={form.control}
@@ -230,8 +237,10 @@ export default function Home() {
             </FormItem>
           )}
         />
-
-       <Separator className="my-4" />
+      </div>)}
+      
+      {formStep === 3 && (<div className={
+        cn('rounded-md border p-4')}>
       {/* assign role dropdown */}
       <FormField
           control={form.control}
@@ -397,7 +406,37 @@ export default function Home() {
           )}
         />
         </div>
-        <Button type="submit">Submit</Button>
+        )}
+      
+        <div className="flex gap-2">
+
+        {formStep === 3 && (<Button type="submit"
+        >Submit</Button>)}
+
+
+        {formStep === 0 && (<Button type="button" 
+          variant={"ghost"} onClick={()=> {
+          setFormStep(1);
+        }}>Go to page 2
+        <ArrowRight className="w-4 h-4 ml-2"/>
+        </Button>)}
+        
+        {formStep === 1 && (<Button type="button" 
+        variant={"ghost"} onClick={()=> {
+          setFormStep(2);
+        }}>Go to page 3
+        <ArrowRight className="w-4 h-4 ml-2"/>
+        </Button>)}
+
+        {formStep === 2 && (<Button type="button" 
+        variant={"ghost"} onClick={()=> {
+          setFormStep(3);
+        }}>Go to page 4
+        <ArrowRight className="w-4 h-4 ml-2"/>
+        </Button>)}
+
+
+        </div>
       </form>
     </Form>
       </CardContent>
