@@ -7,12 +7,6 @@ export const FormSchema = z.object({
   password: z.string().min(6).max(100),
   email: z.string().email(),
   notificationEmail: z.string().email(),
-  role: z.string({
-    required_error: "Please select a role.",
-  }),
-  operation: z.string({
-    required_error: "Please select an operation.",
-  }),
 });
 
 
