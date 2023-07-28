@@ -2,8 +2,11 @@ import {z} from 'zod'
 
 export const ClientSchema = z.object({
   clientId: z.string().min(3).max(255),
+  userId: z.string().min(3).max(255),
   clientSecret: z.string().min(3).max(255),
+  operation: z.string().min(3).max(255),
   email: z.string().email(),
+  notificationEmail: z.string().email(),
   name: z.string().min(3).max(255),
   studentId: z.string().min(7).max(7),
   year: z.string().min(2).max(10),
