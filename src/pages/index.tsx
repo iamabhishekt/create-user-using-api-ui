@@ -535,12 +535,18 @@ export default function Home() {
                         const clientIdState = form.getFieldState("clientId");
                         const clientSecretState =
                           form.getFieldState("clientSecret");
+                        const subdomainState =
+                          form.getFieldState("subdomain");
 
                         if (!clientIdState.isDirty || clientIdState.invalid)
                           return;
                         if (
                           !clientSecretState.isDirty ||
                           clientSecretState.invalid
+                        )
+                        if (
+                          !subdomainState.isDirty ||
+                          subdomainState.invalid
                         )
                           return;
                         setFormStep(2);
