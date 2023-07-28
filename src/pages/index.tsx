@@ -66,8 +66,9 @@ const roles = [
   { label: "Distributed Sending User", value: "distributedSendingUser" },
 ] as const
 
+
 export default function Home() {
-  const form = useForm<Input>({
+  const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema), // change this from schema auth.ts
     defaultValues: {
       clientId: "",
@@ -76,10 +77,11 @@ export default function Home() {
       password: "",
       email: "",
       notificationEmail: "",
+      operation: "",
+      role: "",
     },
   })
 
-  console.log(form.watch())
 
   function onSubmit (data: Input) {
     console.log(data)
