@@ -52,6 +52,7 @@ export default function Home() {
     defaultValues: {
       clientId: "",
       clientSecret: "",
+      subdomain: "",
       userId: "",
       password: "",
       email: "",
@@ -164,6 +165,27 @@ export default function Home() {
                           </FormControl>
                           <FormDescription>
                             Enter client secret from Business Unit.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* subdomain*/}
+                    <FormField
+                      control={form.control}
+                      name="subdomain" //relates to auth.ts
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Subdomain</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Subdomain"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Enter subdomain from Business Unit.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
