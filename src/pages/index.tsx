@@ -1,7 +1,9 @@
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import { Button } from '@/components/ui/button'
+import { Check, ChevronsUpDown } from "lucide-react"
 import { Label } from "@/components/ui/label"
+import Link from "next/link"
 import {
   Form,
   FormControl,
@@ -26,25 +28,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
 import { Input } from "@/components/ui/input"
 import { useForm } from 'react-hook-form'
-import { registerSchema } from '@/validators/auth'
+import { ClientSchema } from '@/validators/auth'
 import { z } from "zod"
 import { zodResolver} from "@hookform/resolvers/zod"
+import { toast } from "@/components/ui/use-toast"
+import { cn } from "@/lib/utils"
 
 const inter = Inter({ subsets: ['latin'] })
-type Input = z.infer<typeof registerSchema>
+type Input = z.infer<typeof ClientSchema>
+
+const operations = [
+  { label: "Create User", value: "CreateUser" },
+  { label: "Update User", value: "UpdateUser" },
+  { label: "Disable User", value: "DisableUser" },
+] as const
+
+const FormSchema = z.object({
+  operation: z.string({
+    required_error: "Please select an operation.",
+  }),
+})
 
 export default function Home() {
   const form = useForm<Input>({
-    resolver: zodResolver(registerSchema), // change this from schema auth.ts
+    resolver: zodResolver(ClientSchema), // change this from schema auth.ts
     defaultValues: {
-      confirmPassword: "",
-      email: "",
-      name: "",
-      password: "",
-      year: ""
-    }
+      clientId: "",
+      clientSecret: "",
+    },
   })
 
   function onSubmit (data: Input) {
@@ -59,7 +85,68 @@ export default function Home() {
       </CardHeader>
       <CardContent>
       <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+      <FormField
+          control={form.control}
+          name="operation"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>User Operations</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-[200px] justify-between",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value
+                        ? operations.find(
+                            (operation) => operation.value === field.value
+                          )?.label
+                        : "Select Operation"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search Operation..." />
+                    <CommandEmpty>No operation found.</CommandEmpty>
+                    <CommandGroup>
+                      {operations.map((operation) => (
+                        <CommandItem
+                          value={operation.value}
+                          key={operation.value}
+                          onSelect={(value) => {
+                            form.setValue("operation", value)
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              operation.value === field.value
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {operation.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <FormDescription>
+                This is the operation that will be used for users in SFMC.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="clientId" //relates to auth.ts
@@ -87,6 +174,70 @@ export default function Home() {
               </FormControl>
               <FormDescription>
                 Enter client secret from Business Unit.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+       <FormField
+          control={form.control}
+          name="userId" //relates to auth.ts
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel >User ID</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter User ID" {...field} />
+              </FormControl>
+              <FormDescription>
+                Enter User ID for new user.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="password" //relates to auth.ts
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel >User Password</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter User Password" {...field} />
+              </FormControl>
+              <FormDescription>
+                Enter Temporary User Password for new user.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email" //relates to auth.ts
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel >User Email</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter User Email" {...field} />
+              </FormControl>
+              <FormDescription>
+                Enter User Email given by user.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="notificationEmail" //relates to auth.ts
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel >User Notification Email</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter User Notification Email" {...field} />
+              </FormControl>
+              <FormDescription>
+                Enter User Notification Email given by user.
               </FormDescription>
               <FormMessage />
             </FormItem>

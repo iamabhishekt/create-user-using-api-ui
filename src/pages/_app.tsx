@@ -11,6 +11,7 @@ export default function App({ Component, pageProps }: AppProps) {
      <Component {...pageProps} />
      </div>
      <ThemeToggle className={"absolute top-6 right-6"}/>
+
   </NextThemesProvider>
 )
 }
