@@ -40,6 +40,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
+import axios from "axios";
 
 const inter = Inter({ subsets: ["latin"] });
 type Input = z.infer<typeof FormSchema>;
@@ -60,10 +61,63 @@ export default function Home() {
     },
   });
 
-  function onSubmit(data: Input) {
-    alert(JSON.stringify(data, null, 4));
-    //add toaster component to check different conditions
-  }
+  const getBearerToken = async (
+    clientId: string,
+    clientSecret: string,
+    subdomain: string
+  ): Promise<string> => {
+    try {
+      const response = await fetch('/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          grant_type: 'client_credentials',
+          client_id: clientId,
+          client_secret: clientSecret,
+          subdomain: subdomain,
+        }),
+      });
+      const data = await response.json();
+      return data.access_token;
+    } catch (error) {
+      console.error('Error fetching token:', error);
+      throw error;
+    }
+  };
+  
+
+  const onSubmit = async (data: Input) => {
+    try {
+      const { clientId, clientSecret, subdomain } = data;
+      const bearerToken = await getBearerToken(
+        clientId,
+        clientSecret,
+        subdomain
+      );
+
+      // Convert the form data to the format expected by your API
+      // const userData = convertDataToUserData(data);
+
+      const response = await axios.post(
+        "https://mclxdpbrg2n9j1y8ftm46zszshqy.soap.marketingcloudapis.com/Service.asmx",
+        {
+          headers: {
+            Authorization: `Bearer ${bearerToken}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error creating user:", error);
+      throw error;
+    }
+  };
+
+  // function onSubmit(data: Input) {
+  //   alert(JSON.stringify(data, null, 4));
+  //   //add toaster component to check different conditions
+  // }
 
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -526,22 +580,24 @@ export default function Home() {
                     <Button
                       type="button"
                       variant={"ghost"}
-                      onClick={() => {
+                      onClick={async () => {
                         // validation
                         form.trigger(["clientId", "clientSecret", "subdomain"]);
-                        const clientIdState = form.getFieldState("clientId");
-                        const clientSecretState =
-                          form.getFieldState("clientSecret");
-                        const subdomainState = form.getFieldState("subdomain");
+                        const [clientId, clientSecret, subdomain] =
+                          form.getValues([
+                            "clientId",
+                            "clientSecret",
+                            "subdomain",
+                          ]);
 
-                        if (!clientIdState.isDirty || clientIdState.invalid)
-                          return;
-                        if (
-                          !clientSecretState.isDirty ||
-                          clientSecretState.invalid
-                        )
-                          if (!subdomainState.isDirty || subdomainState.invalid)
-                            return;
+                        if (!clientId || !clientSecret || !subdomain) return;
+
+                        // Get the bearer token
+                        const token = await getBearerToken(
+                          clientId,
+                          clientSecret,
+                          subdomain
+                        );
                         setFormStep(2);
                       }}
                     >
